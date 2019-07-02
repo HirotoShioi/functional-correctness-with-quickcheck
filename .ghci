@@ -1,0 +1,9 @@
+:set prompt "λ> "
+:seti -XOverloadedStrings
+:seti -XScopedTypeVariables
+:set -fno-warn-type-defaults
+:set -DGHCI
+:set -package pretty-simple
+import Text.Pretty.Simple (pPrint)
+import Test.QuickCheck
+:set -interactive-print pPrint
