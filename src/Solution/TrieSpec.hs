@@ -1,3 +1,5 @@
+{-| This module introduces some of the test cases you can implement for the Trie
+-}
 {-# LANGUAGE TemplateHaskell #-}
 
 module Solution.TrieSpec where
@@ -8,7 +10,7 @@ import           Prelude         hiding (lookup, null)
 import           Solution.Tries  (Trie (..), delete, empty, insert, lookup,
                                   member, size, toList, union, valid)
 import           Test.QuickCheck (Arbitrary (..), Property, conjoin, elements,
-                                  quickCheckAll, (.&&.), (===))
+                                  quickCheckAll, (.&&.), (===), label, counterexample)
 
 type TestTrie = Trie KeySource Value
 type KeyValue = (Key, Value)
@@ -97,16 +99,36 @@ prop_UnionElem t1 t2 =
 --------------------------------------------------------------------------------
 
 prop_InsertModel :: KeyValue -> TestTrie -> Property
-prop_InsertModel (k, v) t = insert k v t =~= M.insert k v (toList t)
+prop_InsertModel (k, v) t = 
+    counterexample (showCounterExample t) $
+    insert k v t =~= M.insert k v (toList t)
 
+-- On this case, we're extensively debugging the test code using 'label' anc 'counterExample'
+-- What I've found is that, 99% of the times, generated trie does not have key-value
+-- pair that we're trying to delete. This means delete is nothing at all, making
+-- hard for QuickCheck to find bugs.
 prop_DeleteModel :: KeyValue -> TestTrie -> Property
 prop_DeleteModel (k, v) t =
-    delete k (insert k v t)
-    =~=
-    M.delete k (toList $ insert k v t)
+    label haskey $ counterexample (showCounterExample t) $
+      delete k (insert k v t)
+      =~=
+      M.delete k (toList $ insert k v t)
+  where
+    haskey = if member k t
+        then "Generated trie already has key value pair inserted"
+        else "Generated trie does not have key-value pair"
+
+showCounterExample :: TestTrie -> String
+showCounterExample t = mconcat
+    [ "Trie model: "
+    , show (toList t)
+    ]
 
 prop_UnionModel :: TestTrie -> TestTrie -> Property
-prop_UnionModel t1 t2 = (t1 <> t2) =~= (toList t1 <> toList t2)
+prop_UnionModel t1 t2 = 
+    counterexample ("Left trie\n" <> showCounterExample t1) $
+    counterexample ("Right trie\n" <> showCounterExample t2) $
+        (t1 <> t2) =~= (toList t1 <> toList t2)
 
 (=~=) :: TestTrie -> Map Key Value -> Property
 t =~= m = toList t === m
