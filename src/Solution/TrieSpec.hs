@@ -100,7 +100,7 @@ prop_UnionElem t1 t2 =
 
 prop_InsertModel :: KeyValue -> TestTrie -> Property
 prop_InsertModel (k, v) t = 
-    counterexample (showCounterExample t) $
+    counterexample ("Model: " <> showCounterExample t) $
     insert k v t =~= M.insert k v (toList t)
 
 -- On this case, we're extensively debugging the test code using 'label' anc 'counterExample'
@@ -109,7 +109,7 @@ prop_InsertModel (k, v) t =
 -- hard for QuickCheck to find bugs.
 prop_DeleteModel :: KeyValue -> TestTrie -> Property
 prop_DeleteModel (k, v) t =
-    label haskey $ counterexample (showCounterExample t) $
+    label haskey $ counterexample ("Model: " <> showCounterExample t) $
       delete k (insert k v t)
       =~=
       M.delete k (toList $ insert k v t)
@@ -119,10 +119,7 @@ prop_DeleteModel (k, v) t =
         else "Generated trie does not have key-value pair"
 
 showCounterExample :: TestTrie -> String
-showCounterExample t = mconcat
-    [ "Trie model: "
-    , show (toList t)
-    ]
+showCounterExample = show . toList
 
 prop_UnionModel :: TestTrie -> TestTrie -> Property
 prop_UnionModel t1 t2 = 

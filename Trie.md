@@ -95,7 +95,7 @@ functions work as expected.
 
 3. What can be used as a model of Trie? (Optional: can you explain it?)
 
-4. Implement abstraction function of your Trie
+4. Implement abstraction function for your Trie
 
 5. After finishing 4, implement following interfaces:
 
