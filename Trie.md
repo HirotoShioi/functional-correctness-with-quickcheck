@@ -93,11 +93,11 @@ delete :: String -> Trie a -> Trie a -- deletes the key if it exists
 Using deriving for these is ok, but please convince yourself that the derived
 functions work as expected.
 
-3. What can be used as a model of Trie? (Optional can you explain it?)
+3. What can be used as a model of Trie? (Optional: can you explain it?)
 
 4. Implement abstraction function of your Trie
 
-5. After finishing 4. implement following interfaces:
+5. After finishing 4, implement following interfaces:
 
 ```haskell
 member :: String -> Trie a -> Bool -- Checks if given String is member of trie
@@ -106,7 +106,7 @@ elems  :: Trie a -> [a] -- Return all the elements of the trie
 union  :: Trie a -> Trie a -> Trie a -- Produces left-biased union of two tries
 ```
 
-6. Implement test cases for your Trie using Quickcheck
+6. Implement test cases for your Trie using [Quickcheck](http://hackage.haskell.org/package/QuickCheck)
 
 7. Try injecting bugs into your trie to see if your tests can find it.
 

@@ -11,7 +11,7 @@ the project
 stack build ghci
 ```
 
-### Turning off the pretty-printing
+### Turning off pretty-printing
 
 I'm using [pretty-simple](http://hackage.haskell.org/package/pretty-simple) library
 for the repl. If this is not preffered for you, please go to `.ghci` file and delete
