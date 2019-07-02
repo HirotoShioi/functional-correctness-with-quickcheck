@@ -5,5 +5,5 @@
 :set -DGHCI
 :set -package pretty-simple
 import Text.Pretty.Simple (pPrint)
-import Test.QuickCheck
 :set -interactive-print pPrint
+import Test.QuickCheck
