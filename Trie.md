@@ -110,7 +110,7 @@ union  :: Trie a -> Trie a -> Trie a -- Produces left-biased union of two tries
 
 7. Try injecting bugs into your trie to see if your tests can find it.
 
-### Extra challenges
+## Extra challenges
 
 1. In what way is your trie specific to `String`? Can you generalize it?
 

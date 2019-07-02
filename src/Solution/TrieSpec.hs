@@ -4,13 +4,15 @@
 
 module Solution.TrieSpec where
 
+import           Data.List       (nubBy)
 import           Data.Map.Strict (Map)
 import qualified Data.Map.Strict as M
 import           Prelude         hiding (lookup, null)
 import           Solution.Tries  (Trie (..), delete, empty, insert, lookup,
                                   member, size, toList, union, valid)
-import           Test.QuickCheck (Arbitrary (..), Property, conjoin, elements,
-                                  quickCheckAll, (.&&.), (===), label, counterexample)
+import           Test.QuickCheck (Arbitrary (..), Property, conjoin,
+                                  counterexample, elements, label,
+                                  quickCheckAll, (.&&.), (===), (==>))
 
 type TestTrie = Trie KeySource Value
 type KeyValue = (Key, Value)
@@ -18,7 +20,7 @@ type Key = [KeySource]
 type Value = Int
 
 -- | Used as source of an key
--- When testing trie, we want our tries to have certain number of common prefixes
+-- When testing trie, you want your tries to have certain number of common prefixes.
 -- Limiting the number of keys would allow the generator to generate trie with
 -- commmon prefixes reliably.
 data KeySource
@@ -61,6 +63,22 @@ prop_Insert (k, v) t = lookup k (insert k v t) === Just v
 prop_Delete :: KeyValue -> TestTrie -> Property
 prop_Delete (k, v) t = lookup k (delete k $ insert k v t) === Nothing
 
+prop_Size :: [KeyValue] -> Property
+prop_Size xs = xs == nubBy (\(k1, _) (k2, _) -> k1 == k2) xs ==>
+    let t' = foldl (\acc (k,v) -> insert k v acc) empty xs
+    in size t' === length xs
+
+-- We test that our abstraction function preserves the content of the trie
+-- We've proved that the size function work properly in the previous test so we
+-- can use it as a proof!
+prop_ToList :: TestTrie -> Property
+prop_ToList t =
+    let keyValueList = M.toList $ toList t
+        props = map
+            (\(k, v) -> lookup k t === Just v)
+            keyValueList
+    in conjoin props .&&. size t === M.size (toList t)
+
 --------------------------------------------------------------------------------
 -- Metamorphic testing
 --------------------------------------------------------------------------------
@@ -81,6 +99,7 @@ prop_InsertDelete (k, v) t =
         then delete k t
         else t
 
+-- I feel like this is a very weak property..
 prop_DeleteSize :: Key -> TestTrie -> Bool
 prop_DeleteSize k t = size (delete k t) <= size t
 
@@ -94,41 +113,53 @@ prop_UnionElem t1 t2 =
             keyValueList
     in conjoin props
 
+-- | Try to predict the size of the trie when you apply multiple inserts
+-- into existing tree
+prop_SizeMeta :: [KeyValue] -> TestTrie -> Property
+prop_SizeMeta xs t =
+    let (added, t') = computeSize xs t 0
+    in added + size t === size t'
+  where
+    computeSize :: [KeyValue] -> TestTrie -> Int -> (Int, TestTrie)
+    computeSize [] t num          = (num, t)
+    computeSize ((k, v):xs) t num =
+        let num' = if member k t
+               then num
+               else num + 1
+        in computeSize xs (insert k v t) num'
+
 --------------------------------------------------------------------------------
 -- Model based testing
 --------------------------------------------------------------------------------
 
 prop_InsertModel :: KeyValue -> TestTrie -> Property
-prop_InsertModel (k, v) t = 
-    counterexample ("Model: " <> showCounterExample t) $
-    insert k v t =~= M.insert k v (toList t)
+prop_InsertModel (k, v) t = insert k v t =~= M.insert k v (toList t)
 
 -- On this case, we're extensively debugging the test code using 'label' anc 'counterExample'
 -- What I've found is that, 99% of the times, generated trie does not have key-value
 -- pair that we're trying to delete. This means delete is nothing at all, making
 -- hard for QuickCheck to find bugs.
 prop_DeleteModel :: KeyValue -> TestTrie -> Property
-prop_DeleteModel (k, v) t =
-    label haskey $ counterexample ("Model: " <> showCounterExample t) $
-      delete k (insert k v t)
-      =~=
-      M.delete k (toList $ insert k v t)
+prop_DeleteModel (k, v) t = label haskey $
+    delete k (insert k v t)
+    =~=
+    M.delete k (toList $ insert k v t)
   where
     haskey = if member k t
         then "Generated trie already has key value pair inserted"
         else "Generated trie does not have key-value pair"
 
-showCounterExample :: TestTrie -> String
-showCounterExample = show . toList
-
 prop_UnionModel :: TestTrie -> TestTrie -> Property
-prop_UnionModel t1 t2 = 
-    counterexample ("Left trie\n" <> showCounterExample t1) $
-    counterexample ("Right trie\n" <> showCounterExample t2) $
-        (t1 <> t2) =~= (toList t1 <> toList t2)
+prop_UnionModel t1 t2 =
+    (t1 <> t2) =~= (toList t1 <> toList t2)
 
 (=~=) :: TestTrie -> Map Key Value -> Property
-t =~= m = toList t === m
+t =~= m = 
+    counterexample ("Model: " <> showCounterExample t) $
+    toList t === m
+  where
+    showCounterExample :: TestTrie -> String
+    showCounterExample = show . toList
 
 --------------------------------------------------------------------------------
 -- Laws
