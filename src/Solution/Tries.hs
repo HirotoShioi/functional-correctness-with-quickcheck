@@ -15,6 +15,7 @@ module Solution.Tries
   , elems
   , member
   , union
+  , size
   ) where
 
 import           Control.Monad.State.Strict (State, execState, forM_, modify')
@@ -162,3 +163,6 @@ member key t = isJust $ lookup key t
 
 union :: Ord a => Trie a b -> Trie a b -> Trie a b
 union t1 t2 = M.foldlWithKey' (\acc key value -> insert key value acc) t2 (toList t1)
+
+size :: Ord a => Trie a b -> Int
+size = M.size . toList
