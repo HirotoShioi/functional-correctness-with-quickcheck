@@ -104,7 +104,7 @@ member :: String -> Trie a -> Bool -- Checks if given String is member of trie
 keys   :: Trie a -> [String] -- Return all String of the trie
 elems  :: Trie a -> [a] -- Return all the elements of the trie
 union  :: Trie a -> Trie a -> Trie a -- Produces left-biased union of two tries
-size   :: Trie a -> Int -- Return size of the tries
+size   :: Trie a -> Int -- Return size of the trie
 ```
 
 6. Implement test cases for your Trie using [Quickcheck](http://hackage.haskell.org/package/QuickCheck)
