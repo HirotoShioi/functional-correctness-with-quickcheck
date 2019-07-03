@@ -135,7 +135,7 @@ prop_SizeMeta xs t =
 prop_InsertModel :: KeyValue -> TestTrie -> Property
 prop_InsertModel (k, v) t = insert k v t =~= M.insert k v (toList t)
 
--- On this case, we're extensively debugging the test code using 'label' anc 'counterExample'
+-- On this case, we're extensively debugging the test code using 'label' and 'counterExample'
 -- What I've found is that, 99% of the times, generated trie does not have key-value
 -- pair that we're trying to delete. This means delete is nothing at all, making
 -- hard for QuickCheck to find bugs.

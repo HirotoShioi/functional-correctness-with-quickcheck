@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric       #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module Examples.BST where
+module Examples.BST2 where
 
 import           GHC.Generics
 import           Test.QuickCheck
@@ -31,14 +31,13 @@ find k (Branch l k' v r)
 size :: BST k v -> Int
 size t = length (keys t)
 
-insert :: Ord k => k -> v ->  BST k v -> BST k v
+insert :: Ord k => k -> v -> BST k v -> BST k v
 insert k v Leaf = Branch Leaf k v Leaf
 insert k v (Branch l k' v' r)
   | k < k'    = Branch (insert k v l) k' v' r
-  | k > k'    = Branch l k' v' (insert k v r)
-  | otherwise = Branch l k' v r
+  | otherwise = Branch l k' v' (insert k v r)
 
-delete :: Ord k => k ->  BST k v -> BST k v
+delete :: Ord k => k -> BST k v -> BST k v
 delete _k Leaf = Leaf
 delete k (Branch l k' v' r)
   | k < k'    = Branch (delete k l) k' v' r

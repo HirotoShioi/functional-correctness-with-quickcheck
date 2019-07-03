@@ -122,10 +122,7 @@ instance (Arbitrary key, Arbitrary value, Ord key) => Arbitrary (Trie key value)
     kvs <- (arbitrary :: Gen [([key],value)])
     return $ foldl' (\acc (k,v) -> insert k v acc) empty kvs
 
--- | Converts a trie to a list of key-value pairs.
---
--- >>> toList $ insert "foo" 42 $ insert "bar" 17 empty
--- [("bar",17),("foo",42)]
+-- | Converts a trie to a Map of key-value pairs.
 toList :: forall a b. (Ord a) => Trie a b -> Map [a] b
 toList t = execState (collectKeyValue [] t) mempty
   where
@@ -139,15 +136,10 @@ toList t = execState (collectKeyValue [] t) mempty
     whenJust Nothing _  = return ()
 
 -- | Returns the keys stored in a trie.
---
--- >>> keys $ insert "foo" 42 $ insert "bar" 17 empty
--- ["bar","foo"]
 keys :: (Ord a) => Trie a b -> [[a]]
 keys = M.keys . toList
 
 -- | Returns the values stored in a trie.
---
--- >>> elems $ insert "foo" 42 $ insert "bar" 17 empty
 -- [17,42]
 elems :: (Ord a) => Trie a b -> [b]
 elems = M.elems . toList
@@ -164,5 +156,6 @@ member key t = isJust $ lookup key t
 union :: Ord a => Trie a b -> Trie a b -> Trie a b
 union t1 t2 = M.foldlWithKey' (\acc key value -> insert key value acc) t2 (toList t1)
 
+-- Trie is foldable!
 size :: Ord a => Trie a b -> Int
-size = M.size . toList
+size = length 

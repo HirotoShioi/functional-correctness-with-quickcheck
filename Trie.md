@@ -104,6 +104,7 @@ member :: String -> Trie a -> Bool -- Checks if given String is member of trie
 keys   :: Trie a -> [String] -- Return all String of the trie
 elems  :: Trie a -> [a] -- Return all the elements of the trie
 union  :: Trie a -> Trie a -> Trie a -- Produces left-biased union of two tries
+size   :: Trie a -> Int -- Return size of the trie
 ```
 
 6. Implement test cases for your Trie using [Quickcheck](http://hackage.haskell.org/package/QuickCheck)
@@ -114,6 +115,6 @@ union  :: Trie a -> Trie a -> Trie a -- Produces left-biased union of two tries
 
 1. In what way is your trie specific to `String`? Can you generalize it?
 
-2. Make your trie an instance of the `Monoid` classes
+2. Make your trie an instance of the `Monoid` class
 
-3. Test that your Trie follows `Monoid` and `Functor` laws.
+3. Test that your trie follows `Monoid` and `Functor` laws.
