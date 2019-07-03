@@ -38,7 +38,7 @@ insert k v (Branch l k' v' r)
   | k > k'    = Branch l k' v' (insert k v r)
   | otherwise = Branch l k' v r
 
-delete :: Ord k => k      ->  BST k v -> BST k v
+delete :: Ord k => k ->  BST k v -> BST k v
 delete _k Leaf = Leaf
 delete k (Branch l k' v' r)
   | k < k'    = Branch (delete k l) k' v' r
