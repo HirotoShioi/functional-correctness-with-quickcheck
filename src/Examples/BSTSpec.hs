@@ -17,8 +17,10 @@ prop_ArbitraryValid = valid
 prop_InsertValid :: Int -> Int -> BST Int Int -> Bool
 prop_InsertValid k v t = valid (insert k v t)
 
+-- Excercise: Add validity testing for union, delete function.
+
 --------------------------------------------------------------------------------
--- postcondition properties
+-- post-condition
 --------------------------------------------------------------------------------
 
 prop_InsertPost :: Int -> Int -> BST Int Int -> Int -> Property
@@ -34,6 +36,8 @@ prop_FindPostPresent k v t =
 prop_FindPostAbsent :: Int -> BST Int Int -> Property
 prop_FindPostAbsent k t =
   find k (delete k t) === Nothing
+
+-- Excercise: Add post-conditoin properties for delete and union
 
 --------------------------------------------------------------------------------
 -- metamorphic properties
@@ -51,7 +55,11 @@ prop_InsertInsert :: Int -> Int -> Int -> Int -> BST Int Int -> Property
 prop_InsertInsert k v k' v' t =
   insert k v (insert k' v' t)
   =~=
-  if k==k' then insert k v t else insert k' v' (insert k v t)
+  if k==k' 
+    then insert k v t
+    else insert k' v' (insert k v t)
+
+-- Excercise: Add metamortphic properties to test insert, delete and union
 
 --------------------------------------------------------------------------------
 -- Model based properties
@@ -63,6 +71,8 @@ prop_InsertModel k v t =
 
 deleteKey :: Eq k => k -> [(k, v)] -> [(k, v)]
 deleteKey k = filter ((/=k) . fst)
+
+-- Excercise: Add model based properties for find, nil, delete and union
 
 -- Test all properties in the module: don't touch this code!
 

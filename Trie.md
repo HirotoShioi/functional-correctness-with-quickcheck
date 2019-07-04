@@ -86,7 +86,7 @@ null   :: Trie a -> Bool -- check if a Trie is empty
 valid  :: Trie a -> Bool -- checks if a trie adheres to the invariant
 insert :: String -> a -> Trie a -> Trie a -- inserts/overwrites a key-value pair
 lookup :: String -> Trie a -> Maybe a -- looks up the value associated with the key
-delete :: String -> Trie a -> Trie a -- deletes the key if it exists
+delete :: String -> Trie a -> Trie a -- deletes the key-value pair if it exists
 ```
 
 2. Furthermore, make your trie an instance of the `Functor` and `Foldable` classes.
