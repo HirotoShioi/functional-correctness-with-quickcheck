@@ -117,16 +117,16 @@ prop_UnionElem t1 t2 =
 -- into existing tree
 prop_SizeMeta :: [KeyValue] -> TestTrie -> Property
 prop_SizeMeta xs t =
-    let (added, t') = computeSize xs t 0
+    let (added, t') = inserts xs t 0
     in added + size t === size t'
   where
-    computeSize :: [KeyValue] -> TestTrie -> Int -> (Int, TestTrie)
-    computeSize [] t num          = (num, t)
-    computeSize ((k, v):xs) t num =
+    inserts :: [KeyValue] -> TestTrie -> Int -> (Int, TestTrie)
+    inserts [] t num          = (num, t)
+    inserts ((k, v):xs) t num =
         let num' = if member k t
                then num
                else num + 1
-        in computeSize xs (insert k v t) num'
+        in inserts xs (insert k v t) num'
 
 --------------------------------------------------------------------------------
 -- Model based testing
