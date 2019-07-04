@@ -34,16 +34,13 @@ instance Functor (Trie a) where
   fmap :: (b -> c) -> Trie a b -> Trie a c
   fmap f (Fork mb m) = Fork (f <$> mb) (fmap f <$> m)
 
-instance Foldable (Trie a) where
-
-  foldr :: (b -> r -> r) -> r -> Trie a b -> r
-  foldr f c t = foldr f c $ trieToList t
-   where
-    trieToList (Fork mb m) =
-      let xs = concatMap trieToList m
-      in  case mb of
-        Nothing -> xs
-        Just b  -> b : xs
+instance (Ord a) => Foldable (Trie a) where
+  foldr f b (Fork mVal m) = 
+    let b' = maybe b (`f` b) mVal
+    in foldr 
+      (\(_k, t) acc -> foldr f acc (toList t))
+      b'
+      (M.toList m) 
 
 instance (Ord a) => Semigroup (Trie a b) where
   (<>) = union
@@ -53,16 +50,13 @@ instance (Ord a) => Monoid (Trie a b) where
   mappend = union
 
 -- |The empty trie.
---
--- >>> length empty
--- 0
 empty :: Trie a b
 empty = Fork Nothing M.empty
 
 -- |Checks whether a trie is empty.
 -- >>> null empty
 -- True
--- >>> null (insert "IOHK" True empty)
+-- >>> null (insert "Bar" True empty)
 -- False
 null :: Trie a b -> Bool
 null (Fork (Just _) _) = False
@@ -108,21 +102,22 @@ delete :: Ord a
        => [a]
        -> Trie a b
        -> Trie a b
-delete [] (Fork _ m)          = Fork Nothing m
-delete (a : as) t@(Fork mb m) = case M.lookup a m of
-  Nothing -> t -- Couldn't find key, so don't delete anything
-  Just t' ->   -- We found the key
-    let m' = if null (delete as t')     -- Check if previous recursion made null node
-          then M.delete a m             -- If so, delete it
-          else M.adjust (delete as) a m -- If not, keep going
-    in  Fork mb m'
+delete [] (Fork _ m) = Fork Nothing m
+delete (a : as) t@(Fork mb m) = 
+  case M.lookup a m of
+    Nothing -> t -- Couldn't find key, so don't delete anything
+    Just t' ->   -- We found the key
+      let m' = if null (delete as t')     -- Check if previous recursion made null node
+            then M.delete a m             -- If so, delete it
+            else M.adjust (delete as) a m -- If not, keep going
+      in  Fork mb m'
 
 instance (Arbitrary key, Arbitrary value, Ord key) => Arbitrary (Trie key value) where
   arbitrary = do
     kvs <- (arbitrary :: Gen [([key],value)])
     return $ foldl' (\acc (k,v) -> insert k v acc) empty kvs
 
--- | Converts a trie to a Map of key-value pairs.
+-- | Converts a trie into a Map of key-value pairs.
 toList :: forall a b. (Ord a) => Trie a b -> Map [a] b
 toList t = execState (collectKeyValue [] t) mempty
   where
