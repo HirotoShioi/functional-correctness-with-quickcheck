@@ -68,6 +68,11 @@ above k (Branch l k' v r)
   | k >= k'   = above k r
   | otherwise = Branch (above k l) k' v r
 
+insertions :: BST k v -> [(k, v)]
+insertions Leaf = []
+insertions (Branch l k v r) =
+  (k,v):insertions l++insertions r
+
 toList :: BST k v -> [(k, v)]
 toList Leaf = []
 toList (Branch l k v r) =
