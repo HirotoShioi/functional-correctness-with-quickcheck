@@ -109,7 +109,6 @@ instance (Arbitrary k, Arbitrary v, Ord k, Eq v) => Arbitrary (Equivs k v) where
     (zip (shrink t) (shrink t'))
 
 type EquivTrees = Equivs Key Val
--- Excercise: Add metamortphic properties to test insert, delete and union
 
 --------------------------------------------------------------------------------
 -- Inductive testing
