@@ -74,6 +74,11 @@ toList Leaf = []
 toList (Branch l k v r) =
   toList l ++ [(k,v)] ++ toList r
 
+insertions :: BST k v -> [(k, v)]
+insertions Leaf = []
+insertions (Branch l k v r) =
+  (k,v):insertions l++insertions r
+
 instance (Ord k, Arbitrary k, Arbitrary v) => Arbitrary (BST k v) where
   arbitrary = do kvs <- arbitrary
                  return $ foldr (uncurry insert) nil (kvs :: [(k,v)])
