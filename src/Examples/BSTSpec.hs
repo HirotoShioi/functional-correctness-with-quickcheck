@@ -40,7 +40,7 @@ prop_UnionValid t1 t2 = valid (t1 `union` t2)
 -- post-condition
 --------------------------------------------------------------------------------
 
-prop_InsertPost :: Int -> Int -> Tree -> Int -> Property
+prop_InsertPost :: Key -> Val -> Tree -> Key -> Property
 prop_InsertPost k v t k' =
   find k' (insert k v t)
   ===
@@ -52,11 +52,11 @@ prop_InsertPostSameKey k v t = prop_InsertPost k v t k
 prop_UnionPost :: Tree -> Tree -> Key -> Property
 prop_UnionPost t1 t2 k = find k (t1 `union` t2) === (find k t1 <|> find k t2)
 
-prop_FindPostPresent :: Int -> Int -> Tree -> Property
+prop_FindPostPresent :: Key -> Val -> Tree -> Property
 prop_FindPostPresent k v t =
   find k (insert k v t) === Just v
 
-prop_FindPostAbsent :: Int -> Tree -> Property
+prop_FindPostAbsent :: Key -> Tree -> Property
 prop_FindPostAbsent k t =
   find k (delete k t) === Nothing
 
@@ -69,7 +69,7 @@ prop_InsertDeleteComplete k t = case find k t of
 -- metamorphic properties
 --------------------------------------------------------------------------------
 
-prop_SizeInsert :: Int -> Int -> Tree -> Bool
+prop_SizeInsert :: Key -> Val -> Tree -> Bool
 prop_SizeInsert k v t =
   size (insert k v t) >= size t
 
@@ -77,7 +77,7 @@ prop_SizeInsert k v t =
 t1 =~= t2 =
   toList t1 === toList t2
 
-prop_InsertInsert :: Int -> Int -> Int -> Int -> Tree -> Property
+prop_InsertInsert :: Key -> Val -> Key -> Val -> Tree -> Property
 prop_InsertInsert k v k' v' t =
   insert k v (insert k' v' t)
   =~=
@@ -125,7 +125,7 @@ prop_Equivs (Equivs t t') = t =~= t'
 prop_UnionNil :: Tree -> Property
 prop_UnionNil t = union nil t === t
 
-prop_InsertPreserveEquiv :: Key -> Val -> Equivs Int Int -> Property
+prop_InsertPreserveEquiv :: Key -> Val -> EquivTrees-> Property
 prop_InsertPreserveEquiv k v (Equivs t t') = insert k v t =~= insert k v t'
 
 prop_DeletePreservesEquiv :: Key -> EquivTrees -> Property
@@ -153,7 +153,7 @@ prop_InsertCompleteForUnion t t' = prop_InsertComplete (t `union` t')
 prop_NilModel :: Property
 prop_NilModel = toList (nil :: Tree) === []
 
-prop_InsertModel :: Int -> Int -> Tree -> Property
+prop_InsertModel :: Key -> Val -> Tree -> Property
 prop_InsertModel k v t =
   toList (insert k v t) === L.insert (k,v) (deleteKey k $ toList t)
 
