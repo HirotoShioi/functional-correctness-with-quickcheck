@@ -1,6 +1,8 @@
 # functional-correctness-with-quickcheck
 
-https://scrapbox.io/haskell-quickcheck/
+https://www.dropbox.com/s/tx2b84kae4bw1p4/paper.pdf?dl=0
+
+https://scrapbox.io/haskell-quickcheck/ (**WIP**)
 
 ## How to build this project
 
