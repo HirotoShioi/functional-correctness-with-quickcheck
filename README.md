@@ -1,8 +1,7 @@
 # functional-correctness-with-quickcheck
 
-https://www.dropbox.com/s/tx2b84kae4bw1p4/paper.pdf?dl=0
-
-https://scrapbox.io/haskell-quickcheck/ (**WIP**)
+Working implementation of collections of effective QuickCheck tests based on the
+[paper](./paper.pdf) written by John Hughes, founder of QuickCheck.
 
 ## How to build this project
 
@@ -16,7 +15,7 @@ stack build ghci
 ### Turning off pretty-printing
 
 I'm using [pretty-simple](http://hackage.haskell.org/package/pretty-simple) library
-for the repl. If this is not preffered for you, please go to `.ghci` file and delete
+for the repl. If this is not preferred for you, please go to `.ghci` file and delete
 these lines
 
 ```
